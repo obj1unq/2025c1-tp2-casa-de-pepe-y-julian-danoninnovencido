@@ -1,0 +1,142 @@
+import casa.*
+import cosas.*
+import cuentasBancarias.*
+
+describe "bateria 1" {
+  test "La casa tiene comprado una heladera, dos camas y una tira de asado" {
+    casaDePepeYJulian.comprar(heladera)
+    casaDePepeYJulian.comprar(cama)
+    casaDePepeYJulian.comprar(cama)
+    casaDePepeYJulian.comprar(tiraDeAsado)
+    assert.equals(4 , casaDePepeYJulian.cantidadDeCosasCompradas())
+  }
+
+  test "Validación de errores- La casa no tiene ninguna compra hecha" {
+   
+   // Contemplo la validacion en este method 'vieneDeComprar' por el comando last()
+    assert.throwsException({casaDePepeYJulian.vieneDeComprar(electrodomestico)}) // la validacion en este method por el comando last()
+    assert.throwsException({casaDePepeYJulian.compraMasCara()})
+  }
+
+  test "Falta comida en la casa" {
+    casaDePepeYJulian.comprar(paqueteDeFideos)
+    casaDePepeYJulian.comprar(plancha)
+    casaDePepeYJulian.comprar(cama)
+    assert.that(casaDePepeYJulian.faltaComida())
+    assert.equals(3, casaDePepeYJulian.cantidadDeCosasCompradas())
+  }
+
+  test "Faltan comprar cosas en la casa" {
+    const listaPrueba = [heladera,tiraDeAsado,cama,cama,paqueteDeFideos]
+
+    casaDePepeYJulian.comprar(plancha)
+    casaDePepeYJulian.comprar(cama)
+    assert.equals([heladera,tiraDeAsado,paqueteDeFideos], casaDePepeYJulian.queFaltaComprar(listaPrueba))
+  
+  //El test queda en verde, pero la verdad no creo que deberia pasar por los resultados
+  //que tuve en el REPL con el method 'queFaltaComprar'.
+  }
+}
+
+describe "Tests TP" {
+  test "Se compra una HELADERA, CAMA y una PLANCHA" {
+    casaDePepeYJulian.comprar(heladera)
+    casaDePepeYJulian.comprar(cama)
+    casaDePepeYJulian.comprar(plancha)
+    assert.equals(3, casaDePepeYJulian.cantidadDeCosasCompradas())
+    }
+    
+   test "En las compras hechas hay compra de electrodomestico y mueble" {
+        casaDePepeYJulian.comprar(heladera)
+        casaDePepeYJulian.comprar(cama)
+        casaDePepeYJulian.comprar(plancha)
+        assert.that(casaDePepeYJulian.tieneAlgun(electrodomestico))
+        assert.that(casaDePepeYJulian.tieneAlgun(mueble))
+    
+    }
+
+    test "VieneDeComprar(electro) -> True. vieneDeComprar(mueble) -> False"{
+        casaDePepeYJulian.comprar(heladera)
+        casaDePepeYJulian.comprar(cama)
+        casaDePepeYJulian.comprar(plancha)
+        assert.that(casaDePepeYJulian.vieneDeComprar(electrodomestico))
+        assert.notThat(casaDePepeYJulian.vieneDeComprar(mueble))  
+    
+    }
+
+    test "La lista de compras es derrochona.(Gasta mas de $9000)" {
+        casaDePepeYJulian.comprar(heladera)
+        casaDePepeYJulian.comprar(cama)
+        casaDePepeYJulian.comprar(plancha)
+        assert.that(casaDePepeYJulian.esDerrochona())
+   
+    }
+
+    test "Los electro que compramos es heladera y plancha" {
+        casaDePepeYJulian.comprar(heladera)
+        casaDePepeYJulian.comprar(cama)
+        casaDePepeYJulian.comprar(plancha)
+        assert.equals([heladera,plancha], casaDePepeYJulian.comprados(electrodomestico))
+    }
+
+    test "La cama es el único mueble que fue comprado" {
+        casaDePepeYJulian.comprar(heladera)
+        casaDePepeYJulian.comprar(cama)
+        casaDePepeYJulian.comprar(plancha)
+        assert.equals([cama], casaDePepeYJulian.comprados(mueble))
+    }
+
+    test "Es mala epoca" {
+       //falta hacer comprados(cat)
+        casaDePepeYJulian.comprar(heladera)
+        casaDePepeYJulian.comprar(cama)
+        casaDePepeYJulian.comprar(plancha)
+        assert.notThat(casaDePepeYJulian.malaEpoca())
+   
+    }
+
+    test "De la lista de compras, hay cosas que faltan comprar" {
+        casaDePepeYJulian.comprar(heladera)
+        casaDePepeYJulian.comprar(cama)
+        casaDePepeYJulian.comprar(plancha)
+        assert.equals([tiraDeAsado,paqueteDeFideos], casaDePepeYJulian.queFaltaComprar([tiraDeAsado,plancha,paqueteDeFideos]))
+     
+    }
+
+    test "De la lista de compras, falta comprar mas comida (o no hay comida)" {
+        casaDePepeYJulian.comprar(heladera)
+        casaDePepeYJulian.comprar(cama)
+        casaDePepeYJulian.comprar(plancha)
+        assert.that(casaDePepeYJulian.faltaComida())
+    
+    }
+
+    test "Categorias compradas de la lista" {
+        casaDePepeYJulian.comprar(heladera)
+        casaDePepeYJulian.comprar(cama)
+        casaDePepeYJulian.comprar(plancha)
+        assert.equals([electrodomestico,mueble], casaDePepeYJulian.categoriasCompradas())
+    }
+}
+
+describe "Las compras ya cuestan plata de una de las cuentas asociadas" {
+  test "Compro tres cosas a debitar de cuenta corriente con saldo de 10000" {
+    //La cuenta inicialmente es cuenta Corriente para la casa
+    cuentaCorriente.depositar(40000)
+    casaDePepeYJulian.comprar(heladera)
+    casaDePepeYJulian.comprar(cama)
+    casaDePepeYJulian.comprar(plancha)
+    assert.equals(10800, cuentaCorriente.saldo())
+  }
+
+  test "Compro tres cosas a debitar de la cuenta con gastos. Costo de operacion de 500" {
+    //Este test va a fallar porque solo puedo depositar de a 1000 pesos.
+    casaDePepeYJulian.cuenta(cuentaConGastos)
+    cuentaConGastos.costoDeOperacion(500)
+    cuentaConGastos.depositar(40000)
+    casaDePepeYJulian.comprar(heladera)
+    casaDePepeYJulian.comprar(cama)
+    casaDePepeYJulian.comprar(plancha)
+    assert.equals(10300, cuentaConGastos.saldo())
+  }
+}

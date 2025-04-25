@@ -1,0 +1,55 @@
+import cuentasBancarias.*
+describe "Casos de prueba para cuenta corriente" {
+  test "Inicialmente mi cuenta bancaria tiene 20 y deposito 1000. Total 1020 de saldo" {
+    cuentaCorriente.saldo(20) //Seteo ya que inicialmente la creo sin saldo a la cuenta
+    cuentaCorriente.depositar(1000)
+    assert.equals(1020, cuentaCorriente.saldo())
+  }
+
+  test "Extraigo un monto de 50 con un saldo de 1020, quedando 970" {
+    cuentaCorriente.depositar(1020)
+    cuentaCorriente.extraer(50)
+    assert.equals(970, cuentaCorriente.saldo())
+  }
+
+  test "Quiero extraer 2000 pero no tengo suficientes fondos" {
+    //Seteo el escenario anterior
+    cuentaCorriente.depositar(970)
+    assert.throwsException({ cuentaCorriente.extraer(2000) })
+  }
+}
+
+describe "Casos de prueba para cuenta con gastos" {
+  test "Cuenta con saldo de 500 y 20 pesos de costo por operación. Deposito de 1000" {
+    cuentaConGastos.costoDeOperacion(20)
+    cuentaConGastos.saldo(500)
+    cuentaConGastos.depositar(1000)
+    assert.equals(1480, cuentaConGastos.saldo())
+  }
+
+  test "Extraccion de 30 pesos al saldo de 1480" {
+    cuentaConGastos.costoDeOperacion(20)
+    cuentaConGastos.saldo(500)
+    cuentaConGastos.depositar(1000)
+    cuentaConGastos.extraer(30)
+    assert.equals(1450, cuentaConGastos.saldo())
+  }
+
+  test "Se intenta depositar 2000 pesos en una sola operacion. El saldo sigue en 1450" {
+    cuentaConGastos.costoDeOperacion(20)
+    cuentaConGastos.saldo(500)
+    cuentaConGastos.depositar(1000)
+    cuentaConGastos.extraer(30)
+    assert.throwsException({cuentaConGastos.depositar(2000)})
+    assert.equals(1450, cuentaConGastos.saldo())
+  }
+
+  test "Extraccion de 2000. Saldo negativo" {
+    cuentaConGastos.costoDeOperacion(20)
+    cuentaConGastos.saldo(500)
+    cuentaConGastos.depositar(1000)
+    cuentaConGastos.extraer(30)
+    cuentaConGastos.extraer(2000)
+    assert.equals(-550, cuentaConGastos.saldo())
+  }
+}
